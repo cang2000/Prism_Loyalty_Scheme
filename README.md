@@ -138,6 +138,12 @@ ORDER BY count_users
 | platinum_control | 818 |
 | Platinum | 1,012 |
 
+
+**Tier naming convention:**
+
+- Treatment: `Bronze`, `Silver`, `Gold`, `Platinum`
+- Control: `bronze_control`, `silver_control`, `gold_control`, `platinum_control`
+
 This shows that treatment exceeds control for Silver, Gold, and Platinum tiers. Bronze is the exception — control (7,980) is larger than treatment (7,512). Groups are therefore downsampled to the smaller of the two per tier using `LEAST(treatment_n, control_n)` in Query 2, resulting in the balanced 11,319 / 11,319 split.
 
 
@@ -288,11 +294,8 @@ ORDER BY
 | Platinum | 818 | 818 | 1,636 |
 | **Total** | **11,319** | **11,319** | **22,638** |
 
-### Tier naming convention
-- Treatment: `Bronze`, `Silver`, `Gold`, `Platinum`
-- Control: `bronze_control`, `silver_control`, `gold_control`, `platinum_control`
 
----
+
 
 ## Key Findings
 
