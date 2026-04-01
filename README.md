@@ -47,7 +47,7 @@ The scheme was built on three intended benefits:
 - **Date range:** 1 January 2022 - 31 December 2024 
 - **Pilot launch:** 1 January 2024
 - **Tier assignment window:** 1 January 2022 – 31 December 2023
-- **Analysis date range:** 1 January 2024 - 31 December 2024 
+- **Analysis date range:** 1 January 2024 - 31 December 2024 (post-pilot)
 
 ### Users table
 `user_crm_id`, `city`, `user_gender`, `registration_date`, `latest_login_date`, `first_purchase_date`, `latest_purchase_date`, `opt_in_status`, `transaction_count`, `total_revenue`, `prism_plus_status`, `prism_plus_tier`
@@ -125,6 +125,21 @@ FROM prism_plus_experiment_user_setup
 GROUP BY prism_plus_tier
 ORDER BY count_users
 ```
+**Result:**
+
+| Tier | Count |
+|---|---|
+| bronze_control | 7,980 |
+| Bronze | 7,512 |
+| silver_control | 2,192 |
+| Silver | 2,307 |
+| gold_control | 797 |
+| Gold | 874 |
+| platinum_control | 818 |
+| Platinum | 1,012 |
+
+This shows that treatment exceeds control for Silver, Gold, and Platinum tiers. Bronze is the exception — control (7,980) is larger than treatment (7,512). Groups are therefore downsampled to the smaller of the two per tier using `LEAST(treatment_n, control_n)` in Query 2, resulting in the balanced 11,319 / 11,319 split.
+
 
 ### Query 2 — Balanced group sizes (treatment and control matched per tier)
 
@@ -756,6 +771,176 @@ ORDER BY
 ![Engagement — repeat purchase rate and AOV](assets/engagement.png)
 
 
+### Coupon Usage (Treatment Group, Jan–Dec 2024)
+
+Between 7% and 17% of treatment transactions used PRSMFRND referral codes organically, with no incentive offered to the referrer.
+
+#### Query 6 — Post-launch coupon usage rate
+
+Classifies each transaction as `PRSMFRND`, `Other Coupon`, or `No Coupon` based on the `transaction_coupon` field. Restricted to the treatment group only, since control group members did not receive referral codes.
+
+```sql
+-- 6. Post-launch coupon usage rate
+
+WITH prism_plus_experiment_user_setup AS (
+  SELECT
+    u.user_crm_id,
+    u.prism_plus_status,
+    CASE
+      WHEN u.prism_plus_status IS TRUE THEN u.prism_plus_tier
+      WHEN COALESCE(t.transaction_count_past_2_years, 0) = 1  THEN 'bronze_control'
+      WHEN COALESCE(t.transaction_count_past_2_years, 0) = 2  THEN 'silver_control'
+      WHEN COALESCE(t.transaction_count_past_2_years, 0) = 3  THEN 'gold_control'
+      WHEN COALESCE(t.transaction_count_past_2_years, 0) >= 4 THEN 'platinum_control'
+    END                                                         AS prism_plus_tier,
+    COALESCE(t.transaction_count_past_2_years, 0)               AS transaction_count_past_2_years
+  FROM `prism-insights.warehouse.users` u
+  LEFT JOIN (
+    SELECT
+      user_crm_id,
+      COUNT(DISTINCT transaction_id)                            AS transaction_count_past_2_years
+    FROM `prism-insights.warehouse.transactions`
+    WHERE date BETWEEN '2022-01-01' AND '2023-12-31'
+    GROUP BY user_crm_id
+  ) t
+    ON u.user_crm_id = t.user_crm_id
+  WHERE u.registration_date < '2024-01-01'
+    AND u.opt_in_status = TRUE
+    AND t.transaction_count_past_2_years > 0
+),
+treatment AS (
+  SELECT * FROM prism_plus_experiment_user_setup
+  WHERE prism_plus_status IS TRUE
+),
+control AS (
+  SELECT * FROM prism_plus_experiment_user_setup
+  WHERE prism_plus_status IS FALSE
+),
+tier_mapping AS (
+  SELECT 'bronze_control'   AS control_tier, 'Bronze'   AS treatment_tier UNION ALL
+  SELECT 'silver_control'   AS control_tier, 'Silver'   AS treatment_tier UNION ALL
+  SELECT 'gold_control'     AS control_tier, 'Gold'     AS treatment_tier UNION ALL
+  SELECT 'platinum_control' AS control_tier, 'Platinum' AS treatment_tier
+),
+treatment_counts AS (
+  SELECT prism_plus_tier, COUNT(*) AS n
+  FROM treatment
+  GROUP BY prism_plus_tier
+),
+control_counts AS (
+  SELECT tm.treatment_tier AS prism_plus_tier, COUNT(*) AS n
+  FROM control c
+  JOIN tier_mapping tm ON c.prism_plus_tier = tm.control_tier
+  GROUP BY 1
+),
+target_counts AS (
+  SELECT
+    t.prism_plus_tier,
+    LEAST(t.n, c.n)                                             AS target_n
+  FROM treatment_counts t
+  JOIN control_counts c ON t.prism_plus_tier = c.prism_plus_tier
+),
+treatment_ranked AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER (
+      PARTITION BY prism_plus_tier
+      ORDER BY user_crm_id
+    )                                                           AS rn
+  FROM treatment
+),
+control_ranked AS (
+  SELECT
+    c.*,
+    tm.treatment_tier                                           AS treatment_tier_key,
+    ROW_NUMBER() OVER (
+      PARTITION BY c.prism_plus_tier
+      ORDER BY c.user_crm_id
+    )                                                           AS rn
+  FROM control c
+  JOIN tier_mapping tm ON c.prism_plus_tier = tm.control_tier
+),
+balanced_treatment AS (
+  SELECT
+    tr.user_crm_id, tr.prism_plus_status, tr.prism_plus_tier,
+    tr.transaction_count_past_2_years
+  FROM treatment_ranked tr
+  JOIN target_counts tc ON tr.prism_plus_tier = tc.prism_plus_tier
+  WHERE tr.rn <= tc.target_n
+),
+balanced_control AS (
+  SELECT
+    cr.user_crm_id, cr.prism_plus_status, cr.prism_plus_tier,
+    cr.transaction_count_past_2_years
+  FROM control_ranked cr
+  JOIN target_counts tc ON cr.treatment_tier_key = tc.prism_plus_tier
+  WHERE cr.rn <= tc.target_n
+),
+final AS (
+  SELECT * FROM balanced_treatment
+  UNION ALL
+  SELECT * FROM balanced_control
+),
+post_launch_transactions AS (
+  SELECT *
+  FROM `prism-insights.warehouse.transactions`
+  WHERE date BETWEEN '2024-01-01' AND '2024-12-31'
+),
+classified_transactions AS (
+  SELECT
+    t.user_crm_id,
+    t.transaction_id,
+    f.prism_plus_tier,
+    CASE
+      WHEN t.transaction_coupon LIKE 'PRSMFRND%'             THEN 'PRSMFRND'
+      WHEN t.transaction_coupon IS NOT NULL
+        AND t.transaction_coupon != ''                        THEN 'Other Coupon'
+      ELSE                                                         'No Coupon'
+    END                                                       AS coupon_type
+  FROM post_launch_transactions t
+  JOIN final f ON t.user_crm_id = f.user_crm_id
+  WHERE f.prism_plus_status IS TRUE
+),
+aggregated AS (
+  SELECT
+    CASE prism_plus_tier
+      WHEN 'Bronze'   THEN 'Bronze'
+      WHEN 'Silver'   THEN 'Silver'
+      WHEN 'Gold'     THEN 'Gold'
+      WHEN 'Platinum' THEN 'Platinum'
+    END                                                       AS tier,
+    coupon_type,
+    COUNT(DISTINCT transaction_id)                            AS transactions
+  FROM classified_transactions
+  GROUP BY 1, 2
+)
+SELECT
+  tier,
+  coupon_type,
+  transactions,
+  ROUND(
+    transactions * 100.0 /
+    SUM(transactions) OVER (PARTITION BY tier), 2)            AS pct_of_transactions
+FROM aggregated
+ORDER BY
+  CASE tier
+    WHEN 'Bronze'   THEN 1
+    WHEN 'Silver'   THEN 2
+    WHEN 'Gold'     THEN 3
+    WHEN 'Platinum' THEN 4
+  END,
+  coupon_type
+```
+
+| Tier | No Coupon | PRSMFRND Referral | Other |
+|---|---|---|---|
+| Bronze | 71.7% | 17.0% | 11.3% |
+| Silver | 73.6% | 13.8% | 12.7% |
+| Gold | 74.7% | 13.3% | 12.1% |
+| Platinum | 80.1% | 7.4% | 12.6% |
+
+
+
 ### Profitability (Jan–Dec 2024)
 
 #### Query 7 — Profitability per tier
@@ -946,173 +1131,6 @@ ORDER BY
 
 > **Note on Platinum:** The negative net uplift requires careful interpretation. It could reflect a discount rate that is simply too generous, or it could reflect the fact that Platinum members are naturally high spenders who would have bought regardless of scheme membership. The A/B test design isolates the scheme effect, but the margin is thin enough that both interpretations remain plausible. This should be monitored closely in year two.
 
-### Coupon Usage (Treatment Group, Jan–Dec 2024)
-
-Between 7% and 17% of treatment transactions used PRSMFRND referral codes organically, with no incentive offered to the referrer.
-
-#### Query 6 — Post-launch coupon usage rate
-
-Classifies each transaction as `PRSMFRND`, `Other Coupon`, or `No Coupon` based on the `transaction_coupon` field. Restricted to the treatment group only, since control group members did not receive referral codes.
-
-```sql
--- 6. Post-launch coupon usage rate
-
-WITH prism_plus_experiment_user_setup AS (
-  SELECT
-    u.user_crm_id,
-    u.prism_plus_status,
-    CASE
-      WHEN u.prism_plus_status IS TRUE THEN u.prism_plus_tier
-      WHEN COALESCE(t.transaction_count_past_2_years, 0) = 1  THEN 'bronze_control'
-      WHEN COALESCE(t.transaction_count_past_2_years, 0) = 2  THEN 'silver_control'
-      WHEN COALESCE(t.transaction_count_past_2_years, 0) = 3  THEN 'gold_control'
-      WHEN COALESCE(t.transaction_count_past_2_years, 0) >= 4 THEN 'platinum_control'
-    END                                                         AS prism_plus_tier,
-    COALESCE(t.transaction_count_past_2_years, 0)               AS transaction_count_past_2_years
-  FROM `prism-insights.warehouse.users` u
-  LEFT JOIN (
-    SELECT
-      user_crm_id,
-      COUNT(DISTINCT transaction_id)                            AS transaction_count_past_2_years
-    FROM `prism-insights.warehouse.transactions`
-    WHERE date BETWEEN '2022-01-01' AND '2023-12-31'
-    GROUP BY user_crm_id
-  ) t
-    ON u.user_crm_id = t.user_crm_id
-  WHERE u.registration_date < '2024-01-01'
-    AND u.opt_in_status = TRUE
-    AND t.transaction_count_past_2_years > 0
-),
-treatment AS (
-  SELECT * FROM prism_plus_experiment_user_setup
-  WHERE prism_plus_status IS TRUE
-),
-control AS (
-  SELECT * FROM prism_plus_experiment_user_setup
-  WHERE prism_plus_status IS FALSE
-),
-tier_mapping AS (
-  SELECT 'bronze_control'   AS control_tier, 'Bronze'   AS treatment_tier UNION ALL
-  SELECT 'silver_control'   AS control_tier, 'Silver'   AS treatment_tier UNION ALL
-  SELECT 'gold_control'     AS control_tier, 'Gold'     AS treatment_tier UNION ALL
-  SELECT 'platinum_control' AS control_tier, 'Platinum' AS treatment_tier
-),
-treatment_counts AS (
-  SELECT prism_plus_tier, COUNT(*) AS n
-  FROM treatment
-  GROUP BY prism_plus_tier
-),
-control_counts AS (
-  SELECT tm.treatment_tier AS prism_plus_tier, COUNT(*) AS n
-  FROM control c
-  JOIN tier_mapping tm ON c.prism_plus_tier = tm.control_tier
-  GROUP BY 1
-),
-target_counts AS (
-  SELECT
-    t.prism_plus_tier,
-    LEAST(t.n, c.n)                                             AS target_n
-  FROM treatment_counts t
-  JOIN control_counts c ON t.prism_plus_tier = c.prism_plus_tier
-),
-treatment_ranked AS (
-  SELECT
-    *,
-    ROW_NUMBER() OVER (
-      PARTITION BY prism_plus_tier
-      ORDER BY user_crm_id
-    )                                                           AS rn
-  FROM treatment
-),
-control_ranked AS (
-  SELECT
-    c.*,
-    tm.treatment_tier                                           AS treatment_tier_key,
-    ROW_NUMBER() OVER (
-      PARTITION BY c.prism_plus_tier
-      ORDER BY c.user_crm_id
-    )                                                           AS rn
-  FROM control c
-  JOIN tier_mapping tm ON c.prism_plus_tier = tm.control_tier
-),
-balanced_treatment AS (
-  SELECT
-    tr.user_crm_id, tr.prism_plus_status, tr.prism_plus_tier,
-    tr.transaction_count_past_2_years
-  FROM treatment_ranked tr
-  JOIN target_counts tc ON tr.prism_plus_tier = tc.prism_plus_tier
-  WHERE tr.rn <= tc.target_n
-),
-balanced_control AS (
-  SELECT
-    cr.user_crm_id, cr.prism_plus_status, cr.prism_plus_tier,
-    cr.transaction_count_past_2_years
-  FROM control_ranked cr
-  JOIN target_counts tc ON cr.treatment_tier_key = tc.prism_plus_tier
-  WHERE cr.rn <= tc.target_n
-),
-final AS (
-  SELECT * FROM balanced_treatment
-  UNION ALL
-  SELECT * FROM balanced_control
-),
-post_launch_transactions AS (
-  SELECT *
-  FROM `prism-insights.warehouse.transactions`
-  WHERE date BETWEEN '2024-01-01' AND '2024-12-31'
-),
-classified_transactions AS (
-  SELECT
-    t.user_crm_id,
-    t.transaction_id,
-    f.prism_plus_tier,
-    CASE
-      WHEN t.transaction_coupon LIKE 'PRSMFRND%'             THEN 'PRSMFRND'
-      WHEN t.transaction_coupon IS NOT NULL
-        AND t.transaction_coupon != ''                        THEN 'Other Coupon'
-      ELSE                                                         'No Coupon'
-    END                                                       AS coupon_type
-  FROM post_launch_transactions t
-  JOIN final f ON t.user_crm_id = f.user_crm_id
-  WHERE f.prism_plus_status IS TRUE
-),
-aggregated AS (
-  SELECT
-    CASE prism_plus_tier
-      WHEN 'Bronze'   THEN 'Bronze'
-      WHEN 'Silver'   THEN 'Silver'
-      WHEN 'Gold'     THEN 'Gold'
-      WHEN 'Platinum' THEN 'Platinum'
-    END                                                       AS tier,
-    coupon_type,
-    COUNT(DISTINCT transaction_id)                            AS transactions
-  FROM classified_transactions
-  GROUP BY 1, 2
-)
-SELECT
-  tier,
-  coupon_type,
-  transactions,
-  ROUND(
-    transactions * 100.0 /
-    SUM(transactions) OVER (PARTITION BY tier), 2)            AS pct_of_transactions
-FROM aggregated
-ORDER BY
-  CASE tier
-    WHEN 'Bronze'   THEN 1
-    WHEN 'Silver'   THEN 2
-    WHEN 'Gold'     THEN 3
-    WHEN 'Platinum' THEN 4
-  END,
-  coupon_type
-```
-
-| Tier | No Coupon | PRSMFRND Referral | Other |
-|---|---|---|---|
-| Bronze | 71.7% | 17.0% | 11.3% |
-| Silver | 73.6% | 13.8% | 12.7% |
-| Gold | 74.7% | 13.3% | 12.1% |
-| Platinum | 80.1% | 7.4% | 12.6% |
 
 ---
 
