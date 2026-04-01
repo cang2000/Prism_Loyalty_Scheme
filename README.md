@@ -285,6 +285,9 @@ ORDER BY
 
 The two groups were well matched geographically — London (~42%), Birmingham (~15%), and Leeds (~8–9%) were near-identical across treatment and control, validating the integrity of the test groups. The treatment group skewed slightly more male (56.7% vs 47.7%), and 2,534 control users had unknown gender compared to zero in the treatment group, suggesting Prism+ members tend to have more complete profiles.
 
+![Segmentation — city and gender split](assets/segmentation.png)
+
+
 #### Query 3 — Gender split (treatment vs control)
 
 Users with unknown gender are excluded from the percentage calculation. The `PARTITION BY group_type` window function calculates the percentage within each group independently.
@@ -746,6 +749,12 @@ ORDER BY
 | Control | Gold | 797 | 34.9% | £36.19 | £30.00 |
 | Treatment | Platinum | 818 | 67.1% | £28.14 | £74.66 |
 | Control | Platinum | 818 | 45.2% | £42.30 | £60.76 |
+
+
+
+
+![Engagement — repeat purchase rate and AOV](assets/engagement.png)
+
 
 ### Profitability (Jan–Dec 2024)
 
