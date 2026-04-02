@@ -303,7 +303,7 @@ The two groups were well matched geographically — London (~42%), Birmingham (~
 
 <figure>
   <img src="assets/segmentation.png" alt="Segmentation — city and gender split">
-  <figcaption>Bar chart visualising the top 3 cities by user count followed by a column chart displaying the gender split</figcaption>
+  <figcaption><em>Bar chart visualising the top 3 cities by user count followed by a column chart displaying the gender split</em></figcaption>
 </figure>
 
 #### Query 3 — Gender split (treatment vs control)
