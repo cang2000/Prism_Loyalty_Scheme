@@ -300,8 +300,11 @@ ORDER BY
 
 The two groups were well matched geographically — London (~42%), Birmingham (~15%), and Leeds (~8–9%) were near-identical across treatment and control, validating the integrity of the test groups. The treatment group skewed slightly more male (56.7% for male vs 43.3% for female), while the control group was more evenly split. 2,534 control users had unknown gender compared to zero in the treatment group, suggesting Prism+ members tend to have more complete profiles.
 
-![Segmentation — city and gender split](assets/segmentation.png)
-*Bar chart visualising the top 3 cities by user count followed by a column chart displaying the gender split*
+
+<figure>
+  <img src="assets/segmentation.png" alt="Segmentation — city and gender split">
+  <figcaption>Bar chart visualising the top 3 cities by user count followed by a column chart displaying the gender split</figcaption>
+</figure>
 
 #### Query 3 — Gender split (treatment vs control)
 
