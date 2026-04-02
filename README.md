@@ -24,11 +24,6 @@ Prism+ operates a four-tier progressive rewards structure. Tier assignment was b
 
 Each member received a personalised referral code in the format `PRSMFRND-{user_crm_id}`, designed to encourage existing members to bring in new customers organically. Free shipping was applied across all tiers.
 
-### Original scheme rationale
-The scheme was built on three intended benefits:
-- **Increased revenue** — tiered discounts motivate customers to spend more to reach the next tier, with the 20% Platinum discount designed to encourage repeat purchases
-- **Improved customer loyalty** — free shipping across all tiers and continuous discount value keeps customers engaged
-- **Word of mouth** — the PRSMFRND referral code encourages existing customers to expand the customer base organically
 
 ## Tools I Used
 
@@ -49,7 +44,7 @@ The scheme was built on three intended benefits:
 - **Tier assignment window:** 1 January 2022 – 31 December 2023
 - **Analysis date range:** 1 January 2024 - 31 December 2024 (post-launch)
 
-> **Data Availability:** Both source tables and all query result outputs are available in the `/data` folder of this repository. The source tables are named in the SQL queries using dot notation (`warehouse.users`, `warehouse.transactions`) as they appear in BigQuery. The exported CSV files in the `/data` folder use underscores (`warehouse_users.csv`, `warehouse_transactions.csv`) as dots are not valid in file names.
+> **Data Availability:** Source tables are available in the `/source` folder and all query result outputs are available in the `/results` folder of this repository. The source tables are named in the SQL queries using dot notation (`warehouse.users`, `warehouse.transactions`) as they appear in BigQuery. The exported CSV files use underscores (`warehouse_users.csv`, `warehouse_transactions.csv`) as dots are not valid in file names.
 
 ### Users table
 `user_crm_id`, `city`, `user_gender`, `registration_date`, `latest_login_date`, `first_purchase_date`, `latest_purchase_date`, `opt_in_status`, `transaction_count`, `total_revenue`, `prism_plus_status`, `prism_plus_tier`
