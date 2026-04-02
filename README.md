@@ -47,7 +47,7 @@ The scheme was built on three intended benefits:
 - **Date range:** 1 January 2022 - 31 December 2024 
 - **Pilot launch:** 1 January 2024
 - **Tier assignment window:** 1 January 2022 – 31 December 2023
-- **Analysis date range:** 1 January 2024 - 31 December 2024 (post-pilot)
+- **Analysis date range:** 1 January 2024 - 31 December 2024 (post-launch)
 
 ### Users table
 `user_crm_id`, `city`, `user_gender`, `registration_date`, `latest_login_date`, `first_purchase_date`, `latest_purchase_date`, `opt_in_status`, `transaction_count`, `total_revenue`, `prism_plus_status`, `prism_plus_tier`
@@ -304,7 +304,7 @@ ORDER BY
 The two groups were well matched geographically — London (~42%), Birmingham (~15%), and Leeds (~8–9%) were near-identical across treatment and control, validating the integrity of the test groups. The treatment group skewed slightly more male (56.7% for male vs 43.3% for female), while the control group was more evenly split. 2,534 control users had unknown gender compared to zero in the treatment group, suggesting Prism+ members tend to have more complete profiles.
 
 ![Segmentation — city and gender split](assets/segmentation.png)
-
+*Bar chart visualising the top 3 cities by user count followed by a column chart displaying the gender split*
 
 #### Query 3 — Gender split (treatment vs control)
 
@@ -772,7 +772,7 @@ ORDER BY
 
 
 ![Engagement — repeat purchase rate and AOV](assets/engagement.png)
-
+*Column charts visualising the repeat purchase rate and average order value of the treatment vs control group post-launch* 
 
 ### Coupon Usage (Treatment Group, Jan–Dec 2024)
 
