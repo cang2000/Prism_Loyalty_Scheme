@@ -301,7 +301,7 @@ ORDER BY
 
 ### Segmentation
 
-The two groups were well matched geographically — London (~42%), Birmingham (~15%), and Leeds (~8–9%) were near-identical across treatment and control, validating the integrity of the test groups. The treatment group skewed slightly more male (56.7% vs 47.7%), and 2,534 control users had unknown gender compared to zero in the treatment group, suggesting Prism+ members tend to have more complete profiles.
+The two groups were well matched geographically — London (~42%), Birmingham (~15%), and Leeds (~8–9%) were near-identical across treatment and control, validating the integrity of the test groups. The treatment group skewed slightly more male (56.7% for male vs 43.3% for female), while the control group was more evenly split. 2,534 control users had unknown gender compared to zero in the treatment group, suggesting Prism+ members tend to have more complete profiles.
 
 ![Segmentation — city and gender split](assets/segmentation.png)
 
@@ -757,16 +757,16 @@ ORDER BY
   group_type DESC
 ```
 
-| Group | Tier | Users | Purchase Rate | AOV | Net Revenue / User |
-|---|---|---|---|---|---|
-| Treatment | Bronze | 7,512 | 31.9% | £30.00 | £17.22 |
-| Control | Bronze | 7,512 | 18.8% | £36.81 | £11.60 |
-| Treatment | Silver | 2,192 | 43.5% | £29.50 | £29.81 |
-| Control | Silver | 2,192 | 29.1% | £35.04 | £20.68 |
-| Treatment | Gold | 797 | 52.7% | £29.90 | £41.94 |
-| Control | Gold | 797 | 34.9% | £36.19 | £30.00 |
-| Treatment | Platinum | 818 | 67.1% | £28.14 | £74.66 |
-| Control | Platinum | 818 | 45.2% | £42.30 | £60.76 |
+| Group | Tier | Users | Purchase Rate | AOV |
+|---|---|---|---|---|
+| Treatment | Bronze | 7,512 | 31.9% | £30.00 | 
+| Control | Bronze | 7,512 | 18.8% | £36.81 | 
+| Treatment | Silver | 2,192 | 43.5% | £29.50 | 
+| Control | Silver | 2,192 | 29.1% | £35.04 | 
+| Treatment | Gold | 797 | 52.7% | £29.90 | 
+| Control | Gold | 797 | 34.9% | £36.19 | 
+| Treatment | Platinum | 818 | 67.1% | £28.14 | 
+| Control | Platinum | 818 | 45.2% | £42.30 | 
 
 
 
@@ -1132,7 +1132,8 @@ ORDER BY
 
 > **Definitions:** Gross revenue uplift = Treatment revenue − Control revenue. Net revenue uplift = Gross revenue uplift − Discount cost. Free shipping costs could not be calculated from the available data — true costs are higher than shown.
 
-> **Note on Platinum:** The negative net uplift requires careful interpretation. It could reflect a discount rate that is simply too generous, or it could reflect the fact that Platinum members are naturally high spenders who would have bought regardless of scheme membership. The A/B test design isolates the scheme effect, but the margin is thin enough that both interpretations remain plausible. This should be monitored closely in year two.
+> **Note on Platinum:** Despite generating £11,368 in revenue uplift, the 20% discount cost is £15,267, which means it actually causes a £3,899 net revenue loss. The discount at that tier is simply too generous which means members are buying more, but not enough more to justify giving away a fifth of every transaction.
+
 
 
 ---
@@ -1231,45 +1232,51 @@ ORDER BY
 
 ## Recommendations
 
-### 01 — Fix Platinum · Zane (CFO)
+### 1 — Fix Platinum 
 **Why:** Platinum is the only tier with a negative net uplift (−£3,899). The 20% discount cost (£15,267) wipes out the purchase frequency benefit entirely.
 
-**Action:** Reduce the Platinum discount from 20% to 15% — the same rate as Gold, but differentiated by exclusive non-monetary perks (see recommendation 04). This reduces the discount cost from £15,267 to approximately £10,800, turning the net position from −£3,899 to approximately +£466.
+**Action:** Reduce the Platinum discount from 20% to 15% — the same rate as Gold, but differentiated by exclusive non-monetary perks (see recommendation 4). This reduces the discount cost from £15,267 to approximately £10,800, turning the net position from −£3,899 to approximately +£466. This retains the highest-value customers at a sustainable cost.
 
 ---
 
-### 02 — Enrol Eligible Non-Members · Zane (CFO)
+### 2 — Enrol Eligible Non-Members
 **Why:** 11,787 opted-in eligible customers are not yet enrolled. They meet every eligibility criterion and are behaviourally identical to the treatment group.
 
-**Action:** Run a targeted email campaign to eligible non-members by tier. Prioritise Bronze (7,980 users at the lowest discount cost of 5%). If enrolled, these users project a net revenue uplift of +£50,211, or +£54,110 with the Platinum fix applied.
+**Action:** Run a targeted email campaign to eligible non-members by tier. If enrolled, these users project a net revenue uplift of +£50,211, or +£54,110 with the Platinum fix applied.
 
 ---
 
-### 03 — Incentivise Referrals · Asmee (CMO)
+### 3 — Incentivise Referrals
 **Why:** Between 7% and 17% of treatment transactions already use PRSMFRND codes organically with no incentive to do so — the referral behaviour exists without being rewarded.
 
-**Action:** Introduce a referral reward for the referrer — for example, a tier upgrade credit after 3 successful referrals, or a one-time discount on their next purchase.
+**Action:** Introduce a referral reward for the referrer — for example, a tier upgrade after 3 successful referrals, or a one-time discount on their next purchase.
 
 ---
 
-### 04 — Redesign Upper-Tier Perks · Asmee (CMO)
-**Why:** Gold and Platinum members are already high-frequency buyers. They don't need bigger discounts — they need perks that make membership feel genuinely premium and exclusive.
+### 4 — Redesign Upper-Tier Perks
+**Why:** Gold and Platinum members are already high-frequency buyers. They don't need bigger discounts; they need perks that make the membership feel genuinely premium and exclusive that is worth more than just discounts.
 
 **Action:** Introduce non-monetary perks alongside the discount structure:
+- **Bronze / Silver:** retain existing discount structure
 - **Gold:** free returns, early sale access
 - **Platinum:** priority customer service, exclusive member events, birthday reward
-- **Bronze / Silver:** retain existing discount structure
 
----
+
 
 ## Financial Impact
 
-The financial impact assessment focuses on the non-member enrolment recommendation (recommendation 02), as it represents the clearest and most directly measurable opportunity. All figures are projected from observed A/B test behaviour.
+The financial impact assessment focuses on the non-member enrolment recommendation (recommendation 2), as it represents the clearest and most directly measurable opportunity. All figures are projected from observed A/B test behaviour.
 
 ### Definitions
 - **Gross revenue uplift:** incremental revenue above the no-scheme baseline, before deducting discount costs. Calculated by applying the observed gross revenue uplift per user from the A/B test to each tier of eligible non-members: `(tier gross uplift ÷ treatment users) × eligible non-members`
+- **Discount cost:** derived from actual per-user discount costs observed in the A/B test (not AOV estimates), with Platinum adjusted to 15%. Calculated as follows:
+
+  1. Take the actual discount cost per tier from Query 7 (treatment group, 2024 actuals)
+  2. Divide by the number of treatment users to get a per-user discount cost
+  3. Multiply by the number of eligible non-members in each tier
+  4. For Platinum, scale the per-user cost by 0.75 (15% ÷ 20%) to reflect the recommended discount reduction
 - **Net revenue uplift:** gross revenue uplift minus discount cost
-- **Discount cost:** derived from actual per-user discount costs observed in the A/B test (not AOV estimates), with Platinum adjusted to 15%
+
 
 ### ① Investment — Estimated Discount Cost
 
@@ -1297,8 +1304,8 @@ The financial impact assessment focuses on the non-member enrolment recommendati
 **Base case: ~4.4 months** (£31,847 ÷ £85,877 × 12)
 
 ### ④ Fragile Assumptions
-1. The non-member control group will respond to enrolment the same way the A/B treatment group did
-2. Platinum members will maintain their purchase frequency despite a 5pp discount reduction, with exclusive perks compensating — this cannot be confirmed from the existing A/B test data
+1. The non-member control group will respond to enrolment the same way the A/B treatment group did.
+2. Platinum members will maintain their purchase frequency despite a 5pp discount reduction, with exclusive perks compensating.
 
 ### ⑤ Scenarios
 
@@ -1308,19 +1315,11 @@ The financial impact assessment focuses on the non-member enrolment recommendati
 | Base Case | £85,877 | £31,847 | £54,030 | ~4.4 months |
 | Optimistic | £104,809 | £31,847 | £72,962 | ~3.6 months |
 
-**Pessimistic:** 50% of forecast gross uplift materialises, Platinum fix not adopted, Bronze tier only enrolled. Discount cost held at full £31,847 as it is largely committed on enrolment.
+**Pessimistic:** 50% of forecast gross uplift materialises, Platinum fix not adopted. Discount cost held at full £31,847 as it is largely committed on enrolment.
 
-**Optimistic:** Base case plus an additional £18,932 in incremental gross revenue from a referral reward that doubles the organic PRSMFRND usage rate (7–17%) already observed in the A/B data. The doubling assumption is supported by ReferralCandy's 2025 benchmark data, which shows that programmes with structured referral rewards and multiple visibility touchpoints consistently lift share rates meaningfully above organic baseline levels.
+**Optimistic:** Base case plus an additional £18,932 in incremental gross revenue from a referral reward that doubles the organic PRSMFRND usage rate (7–17%) already observed in the A/B data. The doubling assumption is a reasoned projection as the behaviour exists without incentive, so a reward is expected to amplify it, but the specific magnitude of uplift is not validated by external data and should be treated as an assumption.
 
-> **Note:** Free shipping costs are excluded from all figures — actual returns are understated. Net revenue uplift figures assume 2024 behavioural patterns hold — this cannot be guaranteed for future periods.
+> **Note:** Free shipping costs are excluded from all figures, actual returns are overstated. Net revenue uplift figures assume 2024 behavioural patterns hold; this cannot be guaranteed for future periods.
 
 
 
-## Limitations
-
-- **Free shipping costs** cannot be quantified from the available data — true net revenue figures are overstated
-- **Scope of test population:** the A/B test was conducted on pre-2024 opted-in registrants only — findings may not generalise to new customers or non opted-in users
-- **Single year of data:** only one year is available — it is unknown whether loyalty effects compound or diminish over time
-- **Platinum causality:** the negative net uplift may reflect a discount that is too generous, or it may reflect naturally high spending behaviour independent of the scheme — both remain plausible
-- **Extrapolation assumption:** projected uplift figures assume non-members behave identically to the treatment group, which is untested
-- **Optimistic scenario assumption:** the referral reward doubling organic usage is a reasoned projection, not an observed outcome
