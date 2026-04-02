@@ -49,6 +49,8 @@ The scheme was built on three intended benefits:
 - **Tier assignment window:** 1 January 2022 – 31 December 2023
 - **Analysis date range:** 1 January 2024 - 31 December 2024 (post-launch)
 
+> **Data Availability:** Both source tables and all query result outputs are available in the `/data` folder of this repository. The source tables are named in the SQL queries using dot notation (`warehouse.users`, `warehouse.transactions`) as they appear in BigQuery. The exported CSV files in the `/data` folder use underscores (`warehouse_users.csv`, `warehouse_transactions.csv`) as dots are not valid in file names.
+
 ### Users table
 `user_crm_id`, `city`, `user_gender`, `registration_date`, `latest_login_date`, `first_purchase_date`, `latest_purchase_date`, `opt_in_status`, `transaction_count`, `total_revenue`, `prism_plus_status`, `prism_plus_tier`
 
