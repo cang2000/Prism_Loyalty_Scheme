@@ -6,15 +6,8 @@ Prism+ is a loyalty programme offered by Prism, a simulated e-commerce company. 
 
 This project analyses the results of a live A/B test run throughout 2024, comparing enrolled Prism+ members against a matched control group of eligible non-members. The analysis produces four data-grounded recommendations for the future of the scheme, along with a full financial impact assessment.
 
-SQL Queries: [SQL Folder](/SQL/)
+SQL Queries: [SQL Folder](/sql/)
 
-## Tools I Used
-
-| Tool | Purpose |
-|---|---|
-| Google BigQuery | Data warehousing and SQL querying |
-| SQL | All data extraction, transformation, and analysis |
-| PowerPoint | Presentation of findings to stakeholders |
 
 
 
@@ -37,6 +30,13 @@ The scheme was built on three intended benefits:
 - **Improved customer loyalty** — free shipping across all tiers and continuous discount value keeps customers engaged
 - **Word of mouth** — the PRSMFRND referral code encourages existing customers to expand the customer base organically
 
+## Tools I Used
+
+| Tool | Purpose |
+|---|---|
+| Google BigQuery | Data warehousing and SQL querying |
+| SQL | All data extraction, transformation, and analysis |
+| PowerPoint | Presentation of findings to stakeholders |
 
 
 ## Data
@@ -1315,11 +1315,11 @@ The financial impact assessment focuses on the non-member enrolment recommendati
 | Base Case | £85,877 | £31,847 | £54,030 | ~4.4 months |
 | Optimistic | £104,809 | £31,847 | £72,962 | ~3.6 months |
 
-**Pessimistic:** 50% of forecast gross uplift materialises, Platinum fix not adopted. Discount cost held at full £31,847 as it is largely committed on enrolment.
+**Pessimistic:** 50% of forecast gross uplift materialises, Platinum fix not adopted. Discount cost held at full £31,847 to maintain a meaningful distinction between pessimistic and base case payback periods.
 
 **Optimistic:** Base case plus an additional £18,932 in incremental gross revenue from a referral reward that doubles the organic PRSMFRND usage rate (7–17%) already observed in the A/B data. The doubling assumption is a reasoned projection as the behaviour exists without incentive, so a reward is expected to amplify it, but the specific magnitude of uplift is not validated by external data and should be treated as an assumption.
 
-> **Note:** Free shipping costs are excluded from all figures, actual returns are overstated. Net revenue uplift figures assume 2024 behavioural patterns hold; this cannot be guaranteed for future periods.
+> **Note:** Free shipping costs are excluded from all figures, net revenue figures are overstated. Net revenue uplift figures assume 2024 behavioural patterns hold; this cannot be guaranteed for future periods.
 
 
 
