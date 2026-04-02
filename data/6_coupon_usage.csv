@@ -1,0 +1,13 @@
+tier,coupon_type,transactions,pct_of_transactions
+Bronze,No Coupon,3058,71.73
+Bronze,Other Coupon,480,11.26
+Bronze,PRSMFRND,725,17.01
+Silver,No Coupon,1583,73.59
+Silver,Other Coupon,272,12.65
+Silver,PRSMFRND,296,13.76
+Gold,No Coupon,772,74.66
+Gold,Other Coupon,125,12.09
+Gold,PRSMFRND,137,13.25
+Platinum,No Coupon,1698,80.06
+Platinum,Other Coupon,267,12.59
+Platinum,PRSMFRND,156,7.36

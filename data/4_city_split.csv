@@ -1,0 +1,9 @@
+group_type,city_grouped,user_count,pct_of_group
+Treatment,London,4790,42.3
+Treatment,Other,3889,34.4
+Treatment,Birmingham,1677,14.8
+Treatment,Leeds,963,8.5
+Control,London,4678,41.3
+Control,Other,3981,35.2
+Control,Birmingham,1672,14.8
+Control,Leeds,988,8.7

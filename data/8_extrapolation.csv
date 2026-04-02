@@ -1,0 +1,5 @@
+tier,full_eligible_users,ab_net_uplift,net_uplift_per_user,projected_net_uplift
+Bronze,15492,35498.0,4.73,73207.0
+Silver,4499,12789.0,5.83,26250.0
+Gold,1671,3612.0,4.53,7572.0
+Platinum,1830,-3899.0,-4.77,-8722.0

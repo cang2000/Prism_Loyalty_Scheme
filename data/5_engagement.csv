@@ -1,0 +1,9 @@
+group_type,tier,total_users,users_who_purchased,repeat_purchase_rate_pct,avg_order_value,avg_revenue_per_user
+Treatment,Bronze,7512,2397,31.9,30.0,53.99
+Control,Bronze,7512,1411,18.8,36.81,61.73
+Treatment,Silver,2192,954,43.5,29.5,68.53
+Control,Silver,2192,637,29.1,35.04,71.15
+Treatment,Gold,797,420,52.7,29.9,79.57
+Control,Gold,797,278,34.9,36.19,86.01
+Treatment,Platinum,818,549,67.1,28.14,111.24
+Control,Platinum,818,370,45.2,42.3,134.32

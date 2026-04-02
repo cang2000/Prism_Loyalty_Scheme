@@ -1,0 +1,5 @@
+group_type,user_gender,user_count,pct_of_group
+Treatment,M,6417,56.7
+Treatment,F,4902,43.3
+Control,F,4594,52.3
+Control,M,4191,47.7

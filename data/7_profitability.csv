@@ -1,0 +1,9 @@
+group_type,tier,total_users,users_who_purchased,total_revenue,avg_revenue_per_user,estimated_discount_cost,net_revenue
+Treatment,Bronze,7512,2397,129411.32,53.99,6811.12,122600.2
+Control,Bronze,7512,1411,87102.6,61.73,0.0,87102.6
+Treatment,Silver,2192,954,65378.56,68.53,7264.28,58114.28
+Control,Silver,2192,637,45324.86,71.15,0.0,45324.86
+Treatment,Gold,797,420,33420.65,79.57,5897.76,27522.89
+Control,Gold,797,278,23911.3,86.01,0.0,23911.3
+Treatment,Platinum,818,549,61068.4,111.24,15267.1,45801.3
+Control,Platinum,818,370,49700.13,134.32,0.0,49700.13
